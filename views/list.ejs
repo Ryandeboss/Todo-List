@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>ToDo List</title>
+</head>
+<body>
+    <div class="box" id="heading">
+        <h1>Today is <%= kindofday %></h1>
+    </div>
+
+    <div class="box">
+        <% for (let item of allItems) { %>
+            <div class="item">
+                <input class='checkbox' type="checkbox" name="delete" value="<%= item.name %>" <% if (item.checked) { %> checked <% } %>>
+                <p><%= item.name %></p>
+            </div>
+        <% } %>
+
+        <form method="post">
+            <input type="text" placeholder="What to do" name="newItem" autocomplete="off" autofocus>
+            <button type="submit">+</button>
+        </form>
+    </div>
+
+    <script>
+        const checkboxes = document.querySelectorAll('.checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    fetch(window.location.pathname, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: "delete", DeleteValue: checkbox.value })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Remove the item div from the DOM
+                            checkbox.parentElement.remove();
+                        } else {
+                            console.error('Error sending checkbox data');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending checkbox data:', error);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
